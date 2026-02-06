@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Kusu's Spice Runners</title>
+    <style>
+        body {
+            background-image: url('assets/bg.png');
+            background-repeat: repeat;
+            animation: scrollBackground 25s linear infinite;
+            font-family: "Comic Sans MS", "Comic Sans", cursive;
+            color: #ffffff;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            height: 100vh;
+            cursor: pointer;
+        }
+
+        @keyframes scrollBackground {
+            from { background-position: 0 0; }
+            to { background-position: 1000px 1000px; }
+        }
+
+        .wavy {
+            display: inline-block;
+            animation: wave-animation 1s ease-in-out infinite;
+            animation-delay: calc(.1s * var(--i));
+        }
+
+        @keyframes wave-animation {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .rainbow-text {
+            animation: color-cycle 5s linear infinite;
+        }
+
+        @keyframes color-cycle {
+            0% { color: #ff00ff; }
+            33% { color: #00ffff; }
+            66% { color: #ffff00; }
+            100% { color: #ff00ff; }
+        }
+
+        .main-content {
+            margin-top: 3%;
+            text-shadow: 4px 4px 8px #000000;
+            pointer-events: none;
+        }
+
+        h1 { font-size: 55px; margin-bottom: 0; }
+        h2 { font-size: 24px; color: #ffffff; margin-top: 5px; }
+
+        .info-container {
+            margin-top: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            display: inline-block;
+            padding: 20px;
+            pointer-events: auto;
+            border: 3px dashed #ff00ff;
+        }
+
+        .countdown-box {
+            font-size: 22px;
+            color: #ff0000;
+            background: #000;
+            padding: 10px;
+            margin: 15px 0;
+            border: 1px solid #ffffff;
+        }
+
+        a { color: #00ff00; font-size: 20px; text-decoration: underline; }
+        a:hover { color: #ff0000; }
+
+        .click-hint {
+            font-size: 18px;
+            color: #00ffff;
+            margin-top: 10px;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body onclick="playMusic()">
+
+    <div class="main-content">
+        <h1 class="rainbow-text" id="wavy-title">Kusu's Spice Runners</h1>
+        <h2>SRB2 v2.2.15 | Hosted via playit.gg</h2>
+        
+        <p class="click-hint">[ CLICK ANYWHERE TO START MUSIC ]</p>
+
+        <div class="info-container">
+            <div id="timer" class="countdown-box">Calculating Server Time...</div>
+            
+            <p style="margin: 5px 0;">UPTIME: 10AM - 10PM MST</p>
+            <p>DOWNLOAD MODS (CATBOX):</p>
+            <a href="https://files.catbox.moe/clg5pt.zip">addons.zip</a>
+            
+            <p style="margin-top: 20px;">IP ADDRESS:</p>
+            <span style="color: #00ffff; font-size: 22px;">147.185.221.25:7190</span>
+        </div>
+    </div>
+
+    <audio id="secretMusic" loop>
+        <source src="assets/music.ogg" type="audio/ogg">
+    </audio>
+
+    <script>
+        // Music playback trigger
+        let musicStarted = false;
+        function playMusic() {
+            if (!musicStarted) {
+                const music = document.getElementById('secretMusic');
+                music.play();
+                document.querySelector('.click-hint').style.visibility = 'hidden';
+                musicStarted = true;
+            }
+        }
+
+        // Automatic Wavy Text creation
+        const title = document.getElementById('wavy-title');
+        const text = title.innerText;
+        title.innerHTML = text.split('').map((char, i) => 
+            `<span class="wavy" style="--i:${i}">${char === ' ' ? '&nbsp;' : char}</span>`
+        ).join('');
+
+        // MST Countdown Timer Logic
+        function updateTimer() {
+            const now = new Date();
+            // Convert local time to MST (UTC-7)
+            const mstOffset = -7; 
+            const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
+            const mstTime = new Date(utc + (3600000 * mstOffset));
+            
+            const hours = mstTime.getHours();
+            const timerEl = document.getElementById('timer');
+
+            if (hours >= 10 && hours < 22) {
+                // Server is Online
+                let remainingHours = 21 - hours;
+                let remainingMins = 59 - mstTime.getMinutes();
+                let remainingSecs = 59 - mstTime.getSeconds();
+                timerEl.style.color = "#00ff00";
+                timerEl.innerHTML = `SERVER ONLINE! Closes in: ${remainingHours}h ${remainingMins}m ${remainingSecs}s`;
+            } else {
+                // Server is Offline
+                timerEl.style.color = "#ff0000";
+                timerEl.innerHTML = "SERVER OFFLINE (Back at 10 AM MST)";
+            }
+        }
+
+        setInterval(updateTimer, 1000);
+        updateTimer();
+    </script>
+
+</body>
+</html>
